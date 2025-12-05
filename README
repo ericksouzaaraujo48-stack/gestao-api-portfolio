@@ -1,0 +1,35 @@
+# 🚀 Nexus Core API - Serviço de Automação de E-mail (Spring Boot)
+
+> API RESTful para cadastro de usuários com integração automática com servidor SMTP (Google) para disparo de e-mails de boas-vindas.
+
+## 💡 Visão Geral
+Este projeto demonstra a capacidade de integrar serviços externos em uma aplicação Back-end, focando em:
+1. **Desenvolvimento de API REST** com tratamento de exceções.
+2. **Automação de E-mail** com o módulo JavaMailSender.
+3. **Boas Práticas de Segurança** (Proteção de credenciais).
+4. **Comunicação Front-end/Back-end** via Fetch API.
+
+## 🛠 Tecnologias Utilizadas
+* **Linguagem:** Java 17
+* **Framework:** Spring Boot 3
+* **Módulos:** Spring Web, Spring Data JPA, Java Mail
+* **Banco de Dados:** H2 Database (In-Memory)
+* **Front-end:** HTML, CSS (Glassmorphism), JavaScript (Mock da requisição)
+
+## ✨ Funcionalidades
+- [x] Endpoint `/usuarios` (POST) para cadastrar novos usuários.
+- [x] Envio de e-mail assíncrono após o cadastro.
+- [x] **Proteção de Credenciais:** A senha do servidor SMTP é lida através de **Variáveis de Ambiente** (`MAIL_PASSWORD`), garantindo que a senha real não seja exposta no código.
+
+## 🔗 Links e Demonstração
+- **Visualizar Página (Live Demo):** [Link do seu Portfólio/nexus-mail-demo.html] 
+  *(Note: Esta é uma simulação Front-end. O servidor Java real precisa ser rodado localmente).*
+- **Vídeo (Comprovação do Envio):** [Cole aqui o link do seu post no LinkedIn com o vídeo do teste]
+
+## ⚙️ Como Rodar a Aplicação
+1. Clone este repositório.
+2. No `application.properties`, configure a variável de ambiente:
+   `spring.mail.password=${MAIL_PASSWORD}`
+3. Configure a variável `MAIL_PASSWORD` na sua IDE (IntelliJ, VS Code).
+4. Execute o projeto (via Maven ou IDE).
+5. Acesse a API e o front-end em `http://localhost:8080`.
