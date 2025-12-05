@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Neural // DevSystem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CONFIGURAÇÕES GERAIS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #050505; /* Fundo base preto */
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Garante altura total */
+            overflow: hidden; /* Impede barras de rolagem devido à animação do fundo */
+            position: relative;
+        }
+
+        /* --- FUNDO ANIMADO (As luzes que se movem) --- */
+        .bg-glow-1 {
+            position: absolute; top: -10%; left: -10%; width: 60%; height: 60%;
+            background: radial-gradient(circle, rgba(255, 0, 55, 0.4) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(120px);
+            animation: floatShape 15s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+        .bg-glow-2 {
+            position: absolute; bottom: -10%; right: -10%; width: 50%; height: 50%;
+            background: radial-gradient(circle, rgba(150, 0, 255, 0.3) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(100px);
+            animation: floatShape 20s ease-in-out infinite alternate-reverse;
+            z-index: -2;
+        }
+
+        /* --- O CARTÃO DE VIDRO (Glassmorphism) --- */
+        .login-card {
+            /* A mágica do vidro: fundo semi-transparente + backdrop-filter blur */
+            background: rgba(30, 30, 30, 0.65);
+            backdrop-filter: blur(20px); /* Desfoca o que está atrás */
+            -webkit-backdrop-filter: blur(20px); /* Para Safari */
+
+            padding: 50px 40px;
+            width: 90%; /* Responsivo para celular */
+            max-width: 450px;
+            border-radius: 16px;
+
+            /* Borda sutil brilhante */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-color: rgba(255, 0, 50, 0.5); /* Topo mais vermelho */
+
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); /* Sombra profunda */
+
+            position: relative;
+            z-index: 1; /* Garante que fique acima do fundo */
+            transform: translateY(20px); opacity: 0; /* Estado inicial para animação */
+            animation: slideUpFade 0.8s ease-out forwards; /* Animação de entrada */
+        }
+
+        /* TÍTULO */
+        h2 {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif; /* Fonte mais pesada */
+            font-size: 26px;
+            margin-bottom: 40px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+        }
+        /* O ponto vermelho brilhante */
+        h2 span {
+            color: #ff0037;
+            text-shadow: 0 0 15px rgba(255, 0, 55, 0.8);
+        }
+
+        /* --- CAMPOS DE TEXTO MODERNOS --- */
+        .input-group { position: relative; margin-bottom: 35px; }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 5px;
+            background: transparent; /* Fundo transparente */
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Apenas a linha de baixo */
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            outline: none;
+            transition: 0.4s;
+        }
+
+        /* Label que flutua (Placeholder) */
+        .input-group label {
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none; /* Permite clicar através do texto */
+            transition: 0.4s ease-in-out;
+        }
+
+        /* Efeito de Foco (Quando clica no campo) */
+        .input-group input:focus,
+        .input-group input:valid { /* :valid mantém o estilo se tiver texto */
+            border-bottom-color: #ff0037;
+            box-shadow: 0 5px 10px -5px rgba(255, 0, 55, 0.5); /* Brilho embaixo */
+        }
+
+        /* Move o label para cima quando focado ou preenchido */
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+            top: -10px;
+            font-size: 12px;
+            color: #ff0037;
+            font-weight: bold;
+        }
+
+        /* --- BOTÃO CYBERPUNK --- */
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ff0037, #c4002d); /* Degradê vermelho */
+            color: #fff;
+            font-weight: 800;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px -10px rgba(255, 0, 55, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efeito de brilho ao passar o mouse */
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        button:hover::before { left: 100%; }
+
+        button:hover {
+            transform: translateY(-3px); /* Sobe um pouquinho */
+            box-shadow: 0 15px 30px -10px rgba(255, 0, 55, 0.7);
+        }
+        button:active { transform: translateY(1px); } /* Efeito de clique */
+
+        /* --- ANIMAÇÕES (Keyframes) --- */
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 50px) rotate(20deg); }
+        }
+        @keyframes slideUpFade {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+
+<div class="login-card">
+    <h2>Nexus<span>.Core</span> //</h2>
+
+    <div class="input-group">
+        <input type="text" id="nome" required autocomplete="off">
+        <label>Protocolo de Nome_</label>
+    </div>
+
+    <div class="input-group">
+        <input type="email" id="email" required autocomplete="off">
+        <label>Endereço de Rede (E-mail)_</label>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="cargo" required autocomplete="off">
+        <label>Atribuição de Função (Cargo)_</label>
+    </div>
+
+    <button onclick="cadastrar()" id="btnSalvar">>>> Iniciar Uplink <<<</button>
+</div>
+
+<script>
+    // O Script permanece praticamente o mesmo, pois a lógica é sólida.
+    // Apenas ajustei os textos e as cores de feedback para combinar com o novo tema.
+    async function cadastrar() {
+        const nome = document.getElementById("nome").value;
+        const email = document.getElementById("email").value;
+        const cargo = document.getElementById("cargo").value;
+        const btn = document.getElementById("btnSalvar");
+        const inputs = document.querySelectorAll('input');
+
+        if(!nome || !email || !cargo) {
+            // Feedback visual de erro (tremer os inputs)
+            inputs.forEach(input => {
+                input.style.borderBottomColor = "#ffcc00"; // Amarelo de alerta
+                setTimeout(() => input.style.borderBottomColor = "", 1000);
+            });
+            alert("⚠️ FALHA DE SINTAXE: Preencha todos os vetores de dados.");
+            return;
+        }
+
+        const textoOriginal = btn.innerText;
+        btn.innerText = "ESTABELECENDO CONEXÃO...";
+        btn.style.background = "#333";
+        btn.style.color = "#aaa";
+        btn.disabled = true;
+
+        const dados = { nome, email, cargo };
+
+        try {
+            const resposta = await fetch('http://localhost:8080/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            if (resposta.ok) {
+                // Sucesso Hacker Verde Neon
+                btn.style.background = "linear-gradient(135deg, #00ff6a, #00c452)";
+                btn.style.color = "#000";
+                btn.style.boxShadow = "0 10px 20px -10px rgba(0, 255, 100, 0.5)";
+                btn.innerText = "ACESSO CONCEDIDO [OK]";
+
+                setTimeout(() => {
+                    alert("✅ UPLINK COMPLETO: E-mail de boas-vindas despachado.");
+                    document.getElementById("nome").value = null;
+                    document.getElementById("email").value = null;
+                    document.getElementById("cargo").value = null;
+
+                    // Reset total do botão
+                    btn.removeAttribute("style"); // Remove os estilos inline do JS
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                }, 1000);
+            } else {
+                 throw new Error("Erro no servidor");
+            }
+        } catch (erro) {
+            console.error(erro);
+            alert("❌ ERRO CRÍTICO: Servidor inacessível.");
+            btn.removeAttribute("style");
+            btn.innerText = textoOriginal;
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
